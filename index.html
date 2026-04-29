@@ -1,10 +1,10 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>FehlerTerminator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -39,19 +39,26 @@
     }
   </style>
 </head>
+
 <body>
 
   <h1>FehlerTerminator</h1>
   <p style="text-align:center;">Hersteller auswählen</p>
 
   <div class="grid">
-    <div class="button">Vaillant</div>
-    <div class="button">Stiebel Eltron</div>
-    <div class="button">Buderus</div>
-    <div class="button">Viessmann</div>
-    <div class="button">Junkers</div>
-    <div class="button">Samsung</div>
+    <div class="button" onclick="selectHersteller('Vaillant')">Vaillant</div>
+    <div class="button" onclick="selectHersteller('Stiebel')">Stiebel Eltron</div>
+    <div class="button" onclick="selectHersteller('Buderus')">Buderus</div>
+    <div class="button" onclick="selectHersteller('Viessmann')">Viessmann</div>
+    <div class="button" onclick="selectHersteller('Junkers')">Junkers</div>
+    <div class="button" onclick="selectHersteller('Samsung')">Samsung</div>
   </div>
+
+  <script>
+    function selectHersteller(name) {
+      alert("Du hast gewählt: " + name);
+    }
+  </script>
 
 </body>
 </html>
