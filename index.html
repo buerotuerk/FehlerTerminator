@@ -7,53 +7,42 @@
 
   <style>
     body {
-      font-family: Arial;
+      font-family: Arial, sans-serif;
+      margin: 0;
       padding: 20px;
-      background: #f5f5f5;
+      background-color: #f5f5f5;
     }
 
     h1 {
       text-align: center;
     }
 
-    input, button {
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
       width: 100%;
       padding: 15px;
       margin-top: 10px;
       font-size: 18px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-
-    button {
-      background: #007bff;
+      background-color: #007bff;
       color: white;
       border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
-    button:active {
-      background: #0056b3;
-    }
-
-    .resultBox {
-      margin-top: 15px;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-    }
-
-    .errorBox {
+    .result {
       margin-top: 20px;
+      background: white;
       padding: 20px;
-      background: #ffe5e5;
       border-radius: 10px;
-    }
-
-    .meta {
-      color: #555;
-      font-size: 14px;
-      margin-top: 8px;
     }
   </style>
 </head>
@@ -65,64 +54,64 @@
 <input id="codeInput" placeholder="Fehlercode eingeben (z.B. F731)">
 <button onclick="suche()">Suchen</button>
 
-<div id="result"></div>
+<div id="output"></div>
 
 <script>
-  const alleCodes = [];
+let alleCodes = [];
 
-  function normalisiereCode(wert) {
-    return wert
-      .toUpperCase()
-      .replaceAll(" ", "")
-      .replaceAll(".", "")
-      .replaceAll("-", "")
-      .trim();
+// 🔍 Suche Funktion
+function suche() {
+  let input = document.getElementById("codeInput").value;
+
+  // normalize: alles groß + Leerzeichen raus
+  let cleanInput = input.toUpperCase().replace(/\s/g, "");
+
+  let treffer = alleCodes.find(e => 
+    e.code.toUpperCase().replace(/\s/g, "") === cleanInput
+  );
+
+  let output = document.getElementById("output");
+
+  if (treffer) {
+    output.innerHTML = `
+      <div class="result">
+        <h2>${treffer.code}</h2>
+        <p><strong>${treffer.bedeutung}</strong></p>
+
+        <p><strong>Hinweis:</strong><br>${treffer.hinweis}</p>
+
+        <p><strong>Gerät:</strong><br>${treffer.geraet}</p>
+
+        <p style="color:gray;">
+          Hersteller: ${treffer.hersteller}<br>
+          Gruppe: ${treffer.gruppe}<br>
+          Baujahr: ${treffer.baujahr}
+        </p>
+      </div>
+    `;
+  } else {
+    output.innerHTML = `
+      <div class="result">
+        ❌ Kein Treffer gefunden
+      </div>
+    `;
   }
-
-  function suche() {
-    const eingabe = document.getElementById("codeInput").value;
-    const code = normalisiereCode(eingabe);
-
-    const treffer = alleCodes.filter(e => normalisiereCode(e.code) === code);
-
-    let html = "";
-
-    if (treffer.length > 0) {
-      treffer.forEach(e => {
-        html += `
-          <div class="resultBox">
-            <h2>${e.code}</h2>
-            <p><strong>${e.bedeutung}</strong></p>
-
-            <p><b>Hinweis:</b><br>${e.hinweis}</p>
-
-            <p><b>Gerät:</b><br>${e.geraet}</p>
-
-            <p class="meta">
-              Hersteller: ${e.hersteller}<br>
-              Gruppe: ${e.gruppe}<br>
-              Baujahr: ${e.baujahr}
-            </p>
-          </div>
-        `;
-      });
-    } else {
-      html = `
-        <div class="errorBox">
-          Kein Eintrag gefunden
-        </div>
-      `;
-    }
-
-    document.getElementById("result").innerHTML = html;
-  }
+}
 </script>
 
-<!-- Daten -->
-<script src="data-vaillant-wp-luft.js"></script>
-<script src="data-vaillant-wp-sole.js"></script>
+<!-- 🔥 ALLE DATEN DATEIEN -->
 <script src="data-vaillant-gas.js"></script>
-<script src="data-vaillant-lueftung.js"></script>
+<script src="data-vaillant-wp-luft.js"></script>
+<script src="data-vaillant-regler.js"></script>
+<script src="data-vaillant-pellet.js"></script>
+
+<script src="data-stiebel-wp.js"></script>
+
+<script src="data-buderus-gas.js"></script>
+<script src="data-buderus-wp.js"></script>
+
+<script src="data-viessmann-gas.js"></script>
+<script src="data-viessmann-wp.js"></script>
 
 </body>
 </html>
