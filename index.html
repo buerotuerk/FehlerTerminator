@@ -37,28 +37,64 @@
     .button:active {
       background-color: #0056b3;
     }
+
+    .back {
+      margin-top: 20px;
+      display: inline-block;
+      cursor: pointer;
+      color: #007bff;
+    }
   </style>
 </head>
 
 <body>
 
-  <h1>FehlerTerminator</h1>
-  <p style="text-align:center;">Hersteller auswählen</p>
+<div id="app"></div>
 
-  <div class="grid">
-    <div class="button" onclick="selectHersteller('Vaillant')">Vaillant</div>
-    <div class="button" onclick="selectHersteller('Stiebel')">Stiebel Eltron</div>
-    <div class="button" onclick="selectHersteller('Buderus')">Buderus</div>
-    <div class="button" onclick="selectHersteller('Viessmann')">Viessmann</div>
-    <div class="button" onclick="selectHersteller('Junkers')">Junkers</div>
-    <div class="button" onclick="selectHersteller('Samsung')">Samsung</div>
-  </div>
+<script>
 
-  <script>
-    function selectHersteller(name) {
-      alert("Du hast gewählt: " + name);
-    }
-  </script>
+function showStart() {
+  document.getElementById("app").innerHTML = `
+    <h1>FehlerTerminator</h1>
+    <p style="text-align:center;">Hersteller auswählen</p>
+
+    <div class="grid">
+      <div class="button" onclick="selectHersteller('Vaillant')">Vaillant</div>
+      <div class="button" onclick="selectHersteller('Stiebel')">Stiebel Eltron</div>
+      <div class="button" onclick="selectHersteller('Buderus')">Buderus</div>
+      <div class="button" onclick="selectHersteller('Viessmann')">Viessmann</div>
+      <div class="button" onclick="selectHersteller('Junkers')">Junkers</div>
+      <div class="button" onclick="selectHersteller('Samsung')">Samsung</div>
+    </div>
+  `;
+}
+
+function selectHersteller(name) {
+
+  if (name === "Vaillant") {
+    document.getElementById("app").innerHTML = `
+      <h1>Vaillant</h1>
+      <p style="text-align:center;">Kategorie auswählen</p>
+
+      <div class="grid">
+        <div class="button" onclick="selectKategorie('Gas')">Gasgeräte</div>
+        <div class="button" onclick="selectKategorie('WP')">Wärmepumpen</div>
+      </div>
+
+      <div class="back" onclick="showStart()">← Zurück</div>
+    `;
+  } else {
+    alert("Noch nicht implementiert: " + name);
+  }
+}
+
+function selectKategorie(kategorie) {
+  alert("Gewählt: " + kategorie);
+}
+
+showStart();
+
+</script>
 
 </body>
 </html>
