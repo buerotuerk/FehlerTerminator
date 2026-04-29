@@ -10,11 +10,16 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f5f5f5;
+      background: #f5f5f5;
     }
 
     h1 {
       text-align: center;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 16px;
     }
 
     .grid {
@@ -25,7 +30,7 @@
     }
 
     .button {
-      background-color: #007bff;
+      background: #007bff;
       color: white;
       padding: 20px;
       text-align: center;
@@ -36,20 +41,13 @@
     }
 
     .button:active {
-      background-color: #0056b3;
-    }
-
-    .back {
-      margin-top: 20px;
-      display: inline-block;
-      cursor: pointer;
-      color: #007bff;
+      background: #0056b3;
     }
 
     .input {
       width: 100%;
-      padding: 15px;
-      font-size: 18px;
+      padding: 16px;
+      font-size: 20px;
       margin-top: 20px;
       border-radius: 8px;
       border: 1px solid #ccc;
@@ -68,9 +66,18 @@
       margin-top: 0;
     }
 
+    .back {
+      margin-top: 25px;
+      display: inline-block;
+      color: #007bff;
+      cursor: pointer;
+      font-size: 17px;
+    }
+
     .small {
       color: #666;
       font-size: 14px;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -79,54 +86,14 @@
 
 <div id="app"></div>
 
-<script>
-const fehlercodes = {
-  "F22": {
-    bedeutung: "Wasserdruck zu niedrig",
-    hinweis: "Anlagendruck prüfen und ggf. Heizungswasser nachfüllen."
-  },
-  "F532": {
-    bedeutung: "Durchfluss im Gebäudekreis zu gering",
-    hinweis: "Volumenstrom, Pumpe, Ventile und Filter prüfen."
-  },
-  "F714": {
-    bedeutung: "Druck im Umweltkreis zu niedrig",
-    hinweis: "Umweltkreis prüfen. Servicefall."
-  },
-  "F731": {
-    bedeutung: "Kältemitteldruck zu hoch",
-    hinweis: "Hochdruckstörung. Kältekreis / Wärmetauscher / Luftstrom prüfen."
-  },
-  "F732": {
-    bedeutung: "Temperatur am Kompressor-Auslass zu hoch",
-    hinweis: "Kältekreis, Sensorik und Betriebsbedingungen prüfen."
-  },
-  "F733": {
-    bedeutung: "Verdampfungstemperatur zu niedrig",
-    hinweis: "Außeneinheit, Luftstrom, Vereisung oder Kältekreis prüfen."
-  },
-  "F734": {
-    bedeutung: "Kondensationstemperatur im Kältemittelkreis zu niedrig",
-    hinweis: "Hydraulik, Wärmetauscher und Betriebsbedingungen prüfen."
-  },
-  "F737": {
-    bedeutung: "Kondensationstemperatur im Kältemittelkreis zu hoch",
-    hinweis: "Durchfluss, Wärmetauscher und Kältekreis prüfen."
-  },
-  "F752": {
-    bedeutung: "Frequenzumrichter meldet einen Fehler",
-    hinweis: "Elektronik / Verdichteransteuerung prüfen. Servicefall."
-  },
-  "F753": {
-    bedeutung: "Kommunikation mit dem Frequenzumrichter ist unterbrochen",
-    hinweis: "Steckverbindungen, Leitung und Elektronik prüfen."
-  },
-  "F788": {
-    bedeutung: "Gebäudekreispumpe meldet einen Fehler",
-    hinweis: "Pumpe, Spannung, Stecker und Hydraulik prüfen."
-  }
-};
+<!-- Daten-Dateien -->
+<script src="data-vaillant-wp-luft.js"></script>
 
+<script>
+let aktuelleDaten = [];
+let aktuellerHersteller = "";
+
+// Startseite
 function showStart() {
   document.getElementById("app").innerHTML = `
     <h1>FehlerTerminator</h1>
@@ -134,7 +101,7 @@ function showStart() {
 
     <div class="grid">
       <div class="button" onclick="selectHersteller('Vaillant')">Vaillant</div>
-      <div class="button" onclick="selectHersteller('Stiebel')">Stiebel Eltron</div>
+      <div class="button" onclick="selectHersteller('Stiebel Eltron')">Stiebel Eltron</div>
       <div class="button" onclick="selectHersteller('Buderus')">Buderus</div>
       <div class="button" onclick="selectHersteller('Viessmann')">Viessmann</div>
       <div class="button" onclick="selectHersteller('Junkers')">Junkers</div>
@@ -143,75 +110,97 @@ function showStart() {
   `;
 }
 
+// Hersteller auswählen
 function selectHersteller(name) {
+  aktuellerHersteller = name;
+
   if (name === "Vaillant") {
+    aktuelleDaten = [
+      ...dataVaillantWPLuft
+    ];
+
+    showSuche();
+  } else {
+    aktuelleDaten = [];
     document.getElementById("app").innerHTML = `
-      <h1>Vaillant</h1>
-      <p style="text-align:center;">Kategorie auswählen</p>
-
-      <div class="grid">
-        <div class="button" onclick="selectKategorie('Gasgeräte')">Gasgeräte</div>
-        <div class="button" onclick="selectKategorie('Wärmepumpen')">Wärmepumpen</div>
+      <h1>${name}</h1>
+      <div class="result">
+        <p>Für diesen Hersteller sind noch keine Daten hinterlegt.</p>
       </div>
-
       <div class="back" onclick="showStart()">← Zurück</div>
     `;
-  } else {
-    alert("Noch nicht implementiert: " + name);
   }
 }
 
-function selectKategorie(kategorie) {
+// Suchseite anzeigen
+function showSuche() {
   document.getElementById("app").innerHTML = `
-    <h1>Vaillant ${kategorie}</h1>
+    <h1>${aktuellerHersteller}</h1>
     <p>Fehlercode eingeben:</p>
 
-    <input id="code" class="input" placeholder="z.B. F732">
+    <input id="code" class="input" placeholder="z.B. F732" autocomplete="off">
 
     <div class="button" onclick="sucheFehler()">Suchen</div>
 
     <div id="ergebnis"></div>
 
-    <div class="back" onclick="selectHersteller('Vaillant')">← Zurück</div>
+    <div class="back" onclick="showStart()">← Zurück</div>
   `;
 }
 
+// Fehler suchen
 function sucheFehler() {
-  const code = document.getElementById("code").value.toUpperCase().replace(".", "").trim();
+  const eingabe = document.getElementById("code").value;
+  const code = normalisiereCode(eingabe);
   const ergebnis = document.getElementById("ergebnis");
 
   if (code === "") {
     ergebnis.innerHTML = `
       <div class="result">
-        <b>Bitte Fehlercode eingeben.</b>
+        <p>Bitte Fehlercode eingeben.</p>
       </div>
     `;
     return;
   }
 
-  if (fehlercodes[code]) {
-    const f = fehlercodes[code];
+  const treffer = aktuelleDaten.filter(eintrag => normalisiereCode(eintrag.code) === code);
 
+  if (treffer.length === 0) {
     ergebnis.innerHTML = `
       <div class="result">
         <h2>${code}</h2>
-        <p><b>Fehlercode-Bedeutung:</b></p>
-        <p>${f.bedeutung}</p>
-
-        <p><b>Hinweis / erster Prüfpunkt:</b></p>
-        <p>${f.hinweis}</p>
-
-        <p class="small">Quelle: Vaillant Fehlercode-Übersicht, intern bitte später gegen Serviceunterlagen prüfen.</p>
+        <p>Kein Treffer gefunden.</p>
       </div>
     `;
-  } else {
-    ergebnis.innerHTML = `
-      <div class="result">
-        <h2>${code}</h2>
-        <p>Fehlercode nicht gefunden.</p>
-      </div>
-    `;
+    return;
   }
+
+  let html = "";
+
+  treffer.forEach(eintrag => {
+    html += `
+      <div class="result">
+        <h2>${eintrag.code}</h2>
+        <p><b>Gerät:</b> ${eintrag.geraet || "-"}</p>
+        <p><b>Bedeutung:</b></p>
+        <p>${eintrag.bedeutung || "-"}</p>
+        <p><b>Hinweis:</b></p>
+        <p>${eintrag.hinweis || "-"}</p>
+        <p class="small">Datenquelle: interne Fehlercode-Datenbank</p>
+      </div>
+    `;
+  });
+
+  ergebnis.innerHTML = html;
+}
+
+// F.732, f732, F 732 → F732
+function normalisiereCode(code) {
+  return code
+    .toUpperCase()
+    .replaceAll(".", "")
+    .replaceAll(" ", "")
+    .trim();
 }
 
 showStart();
