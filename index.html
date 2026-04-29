@@ -36,7 +36,7 @@
     }
 
     .resultBox {
-      margin-top: 20px;
+      margin-top: 15px;
       padding: 20px;
       background: white;
       border-radius: 10px;
@@ -61,27 +61,30 @@
 <div id="result"></div>
 
 <script>
-  // Zentrale Sammlung
   const alleCodes = [];
 
   function suche() {
     const code = document.getElementById("codeInput").value.toUpperCase();
 
-    const treffer = alleCodes.find(e => e.code === code);
+    const treffer = alleCodes.filter(e => e.code === code);
 
     let html = "";
 
-    if (treffer) {
-      html = `
-        <div class="resultBox">
-          <h2>${treffer.code}</h2>
-          <p><strong>${treffer.bedeutung}</strong></p>
+    if (treffer.length > 0) {
 
-          <p><b>Hinweis:</b><br>${treffer.hinweis}</p>
+      treffer.forEach(e => {
+        html += `
+          <div class="resultBox">
+            <h2>${e.code}</h2>
+            <p><strong>${e.bedeutung}</strong></p>
 
-          <p><b>Gerät:</b><br>${treffer.geraet}</p>
-        </div>
-      `;
+            <p><b>Hinweis:</b><br>${e.hinweis}</p>
+
+            <p><b>Gerät:</b><br>${e.geraet}</p>
+          </div>
+        `;
+      });
+
     } else {
       html = `
         <div class="errorBox">
@@ -94,7 +97,6 @@
   }
 </script>
 
-<!-- Datenquellen -->
 <script src="data-vaillant-wp-luft.js"></script>
 <script src="data-vaillant-gas.js"></script>
 
