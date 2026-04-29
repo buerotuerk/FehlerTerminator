@@ -96,12 +96,12 @@
 
             <p><b>Hinweis:</b><br>${e.hinweis}</p>
 
-            <p><b>Gerät:</b><br>${e.geraet || "-"}</p>
+            <p><b>Gerät:</b><br>${e.geraet}</p>
 
             <p class="meta">
-              Hersteller: ${e.hersteller || "-"}<br>
-              Gerätegruppe: ${e.gruppe || "-"}<br>
-              Baujahr: ${e.baujahr || "-"}
+              Hersteller: ${e.hersteller}<br>
+              Gruppe: ${e.gruppe}<br>
+              Baujahr: ${e.baujahr}
             </p>
           </div>
         `;
@@ -118,8 +118,11 @@
   }
 </script>
 
+<!-- Daten -->
 <script src="data-vaillant-wp-luft.js"></script>
+<script src="data-vaillant-wp-sole.js"></script>
 <script src="data-vaillant-gas.js"></script>
+<script src="data-vaillant-lueftung.js"></script>
 
 </body>
 </html>
