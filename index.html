@@ -34,6 +34,20 @@
     button:active {
       background: #0056b3;
     }
+
+    .resultBox {
+      margin-top: 20px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    .errorBox {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ffe5e5;
+      border-radius: 10px;
+    }
   </style>
 </head>
 
@@ -44,8 +58,10 @@
 <input id="codeInput" placeholder="Fehlercode eingeben (z.B. F731)">
 <button onclick="suche()">Suchen</button>
 
+<div id="result"></div>
+
 <script>
-  // 👉 Zentrale Datenliste
+  // Zentrale Sammlung
   const alleCodes = [];
 
   function suche() {
@@ -53,20 +69,32 @@
 
     const treffer = alleCodes.find(e => e.code === code);
 
+    let html = "";
+
     if (treffer) {
-      alert(
-        code + "\n\n" +
-        treffer.bedeutung + "\n\n" +
-        "Hinweis: " + treffer.hinweis + "\n\n" +
-        "Gerät: " + treffer.geraet
-      );
+      html = `
+        <div class="resultBox">
+          <h2>${treffer.code}</h2>
+          <p><strong>${treffer.bedeutung}</strong></p>
+
+          <p><b>Hinweis:</b><br>${treffer.hinweis}</p>
+
+          <p><b>Gerät:</b><br>${treffer.geraet}</p>
+        </div>
+      `;
     } else {
-      alert("Kein Eintrag gefunden");
+      html = `
+        <div class="errorBox">
+          Kein Eintrag gefunden
+        </div>
+      `;
     }
+
+    document.getElementById("result").innerHTML = html;
   }
 </script>
 
-<!-- 👉 HIER kommen nur noch Daten-Dateien rein -->
+<!-- Datenquellen -->
 <script src="data-vaillant-wp-luft.js"></script>
 <script src="data-vaillant-gas.js"></script>
 
