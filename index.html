@@ -32,6 +32,7 @@
       border-radius: 10px;
       font-size: 18px;
       cursor: pointer;
+      margin-top: 15px;
     }
 
     .button:active {
@@ -44,6 +45,14 @@
       cursor: pointer;
       color: #007bff;
     }
+
+    input {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      margin-top: 20px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 
@@ -52,7 +61,6 @@
 <div id="app"></div>
 
 <script>
-
 function showStart() {
   document.getElementById("app").innerHTML = `
     <h1>FehlerTerminator</h1>
@@ -70,7 +78,6 @@ function showStart() {
 }
 
 function selectHersteller(name) {
-
   if (name === "Vaillant") {
     document.getElementById("app").innerHTML = `
       <h1>Vaillant</h1>
@@ -89,11 +96,34 @@ function selectHersteller(name) {
 }
 
 function selectKategorie(kategorie) {
-  alert("Gewählt: " + kategorie);
+  if (kategorie === "Gas") {
+    document.getElementById("app").innerHTML = `
+      <h1>Vaillant Gasgeräte</h1>
+      <p>Fehlercode eingeben:</p>
+
+      <input id="fehlercode" placeholder="z.B. F27">
+
+      <div class="button" onclick="sucheFehler()">Suchen</div>
+
+      <div class="back" onclick="selectHersteller('Vaillant')">← Zurück</div>
+    `;
+  } else {
+    alert("Noch nicht implementiert");
+  }
+}
+
+function sucheFehler() {
+  const code = document.getElementById("fehlercode").value;
+
+  if (code === "") {
+    alert("Bitte Fehlercode eingeben");
+    return;
+  }
+
+  alert("Fehlercode " + code + ": Beschreibung folgt später");
 }
 
 showStart();
-
 </script>
 
 </body>
