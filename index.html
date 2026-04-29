@@ -53,6 +53,14 @@
       margin-top: 20px;
       box-sizing: border-box;
     }
+
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
 
@@ -61,6 +69,7 @@
 <div id="app"></div>
 
 <script>
+
 function showStart() {
   document.getElementById("app").innerHTML = `
     <h1>FehlerTerminator</h1>
@@ -105,6 +114,8 @@ function selectKategorie(kategorie) {
 
       <div class="button" onclick="sucheFehler()">Suchen</div>
 
+      <div id="ergebnis"></div>
+
       <div class="back" onclick="selectHersteller('Vaillant')">← Zurück</div>
     `;
   } else {
@@ -113,17 +124,42 @@ function selectKategorie(kategorie) {
 }
 
 function sucheFehler() {
-  const code = document.getElementById("fehlercode").value;
+  const code = document.getElementById("fehlercode").value.toUpperCase();
 
   if (code === "") {
-    alert("Bitte Fehlercode eingeben");
     return;
   }
 
-  alert("Fehlercode " + code + ": Beschreibung folgt später");
+  let text = "";
+
+  // ERSTE echte Daten
+  if (code === "F27") {
+    text = `
+      <div class="result">
+        <h3>F.27</h3>
+        <p><b>Fehler:</b> Fremdlicht / Flammensignal erkannt</p>
+        <p><b>Mögliche Ursachen:</b></p>
+        <ul>
+          <li>Ionisationselektrode defekt oder verschmutzt</li>
+          <li>Gasarmatur Problem</li>
+          <li>Feuchtigkeit im Gerät</li>
+        </ul>
+        <p><b>Hinweis:</b> Gerät prüfen, ggf. Service notwendig</p>
+      </div>
+    `;
+  } else {
+    text = `
+      <div class="result">
+        <p>Fehlercode ${code} nicht gefunden</p>
+      </div>
+    `;
+  }
+
+  document.getElementById("ergebnis").innerHTML = text;
 }
 
 showStart();
+
 </script>
 
 </body>
