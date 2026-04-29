@@ -23,6 +23,7 @@
       font-size: 18px;
       border-radius: 10px;
       border: 1px solid #ccc;
+      box-sizing: border-box;
     }
 
     button {
@@ -48,6 +49,12 @@
       background: #ffe5e5;
       border-radius: 10px;
     }
+
+    .meta {
+      color: #555;
+      font-size: 14px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 
@@ -63,15 +70,24 @@
 <script>
   const alleCodes = [];
 
-  function suche() {
-    const code = document.getElementById("codeInput").value.toUpperCase();
+  function normalisiereCode(wert) {
+    return wert
+      .toUpperCase()
+      .replaceAll(" ", "")
+      .replaceAll(".", "")
+      .replaceAll("-", "")
+      .trim();
+  }
 
-    const treffer = alleCodes.filter(e => e.code === code);
+  function suche() {
+    const eingabe = document.getElementById("codeInput").value;
+    const code = normalisiereCode(eingabe);
+
+    const treffer = alleCodes.filter(e => normalisiereCode(e.code) === code);
 
     let html = "";
 
     if (treffer.length > 0) {
-
       treffer.forEach(e => {
         html += `
           <div class="resultBox">
@@ -80,11 +96,16 @@
 
             <p><b>Hinweis:</b><br>${e.hinweis}</p>
 
-            <p><b>Gerät:</b><br>${e.geraet}</p>
+            <p><b>Gerät:</b><br>${e.geraet || "-"}</p>
+
+            <p class="meta">
+              Hersteller: ${e.hersteller || "-"}<br>
+              Gerätegruppe: ${e.gruppe || "-"}<br>
+              Baujahr: ${e.baujahr || "-"}
+            </p>
           </div>
         `;
       });
-
     } else {
       html = `
         <div class="errorBox">
