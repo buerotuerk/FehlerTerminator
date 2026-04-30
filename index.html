@@ -17,32 +17,39 @@
       text-align: center;
     }
 
-    input {
-      width: 100%;
-      padding: 15px;
-      font-size: 18px;
-      margin-top: 20px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    button {
+    input, button {
       width: 100%;
       padding: 15px;
       margin-top: 10px;
       font-size: 18px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button {
       background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 8px;
-      cursor: pointer;
     }
 
-    .result {
-      margin-top: 20px;
-      background: white;
+    .resultBox {
+      margin-top: 15px;
       padding: 20px;
+      background: white;
       border-radius: 10px;
+    }
+
+    .errorBox {
+      margin-top: 20px;
+      padding: 20px;
+      background: #ffe5e5;
+      border-radius: 10px;
+    }
+
+    .meta {
+      color: #555;
+      font-size: 14px;
     }
   </style>
 </head>
@@ -51,59 +58,80 @@
 
 <h1>FehlerTerminator</h1>
 
-<input id="codeInput" placeholder="Fehlercode eingeben (z.B. F731)">
+<input id="codeInput" placeholder="Fehlercode oder Fehlerbild eingeben">
 <button onclick="suche()">Suchen</button>
 
-<div id="output"></div>
+<div id="result"></div>
 
 <script>
-let alleCodes = [];
+  const alleCodes = [];
 
-// 🔍 Suche Funktion
-function suche() {
-  let input = document.getElementById("codeInput").value;
-
-  // normalize: alles groß + Leerzeichen raus
-  let cleanInput = input.toUpperCase().replace(/\s/g, "");
-
-  let treffer = alleCodes.find(e => 
-    e.code.toUpperCase().replace(/\s/g, "") === cleanInput
-  );
-
-  let output = document.getElementById("output");
-
-  if (treffer) {
-    output.innerHTML = `
-      <div class="result">
-        <h2>${treffer.code}</h2>
-        <p><strong>${treffer.bedeutung}</strong></p>
-
-        <p><strong>Hinweis:</strong><br>${treffer.hinweis}</p>
-
-        <p><strong>Gerät:</strong><br>${treffer.geraet}</p>
-
-        <p style="color:gray;">
-          Hersteller: ${treffer.hersteller}<br>
-          Gruppe: ${treffer.gruppe}<br>
-          Baujahr: ${treffer.baujahr}
-        </p>
-      </div>
-    `;
-  } else {
-    output.innerHTML = `
-      <div class="result">
-        ❌ Kein Treffer gefunden
-      </div>
-    `;
+  function normalisiere(wert) {
+    return String(wert)
+      .toUpperCase()
+      .replaceAll(" ", "")
+      .replaceAll(".", "")
+      .replaceAll("-", "")
+      .trim();
   }
-}
+
+  function suche() {
+    const eingabeOriginal = document.getElementById("codeInput").value;
+    const eingabe = normalisiere(eingabeOriginal);
+
+    const treffer = alleCodes.filter(e => {
+      const codeMatch = e.code && normalisiere(e.code) === eingabe;
+
+      const begriffMatch = e.suchbegriffe && e.suchbegriffe.some(begriff =>
+        normalisiere(begriff).includes(eingabe) || eingabe.includes(normalisiere(begriff))
+      );
+
+      const textMatch =
+        normalisiere(e.bedeutung || "").includes(eingabe) ||
+        normalisiere(e.ursache || "").includes(eingabe) ||
+        normalisiere(e.hinweis || "").includes(eingabe);
+
+      return codeMatch || begriffMatch || textMatch;
+    });
+
+    let html = "";
+
+    if (treffer.length > 0) {
+      html += `<p><b>${treffer.length} Treffer gefunden</b></p>`;
+
+      treffer.forEach(e => {
+        html += `
+          <div class="resultBox">
+            <h2>${e.code}</h2>
+            <p><strong>${e.bedeutung}</strong></p>
+
+            <p><b>Ursache:</b><br>${e.ursache || "-"}</p>
+            <p><b>Hinweis / Behebung:</b><br>${e.hinweis || "-"}</p>
+            <p><b>Gerät:</b><br>${e.geraet || "-"}</p>
+
+            <p class="meta">
+              Hersteller: ${e.hersteller || "-"}<br>
+              Gruppe: ${e.gruppe || "-"}<br>
+              Baujahr: ${e.baujahr || "-"}
+            </p>
+          </div>
+        `;
+      });
+    } else {
+      html = `<div class="errorBox">Kein Eintrag gefunden</div>`;
+    }
+
+    document.getElementById("result").innerHTML = html;
+  }
 </script>
 
-<!-- 🔥 ALLE DATEN DATEIEN -->
 <script src="data-vaillant-gas.js"></script>
 <script src="data-vaillant-wp-luft.js"></script>
+<script src="data-vaillant-wp-sole.js"></script>
 <script src="data-vaillant-regler.js"></script>
 <script src="data-vaillant-pellet.js"></script>
+<script src="data-vaillant-lueftung.js"></script>
+<script src="data-vaillant-wp-symptome.js"></script>
 
 <script src="data-stiebel-wp.js"></script>
 
