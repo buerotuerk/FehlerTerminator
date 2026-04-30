@@ -1,50 +1,37 @@
-const dataVaillantWPSole = [
+const dataVaillantWPSymptome = [
   {
-    code: "F714",
+    code: "SYMPTOM-DISPLAY-DUNKEL",
+    suchbegriffe: ["display dunkel", "display aus", "kein display", "anzeige dunkel", "regler dunkel"],
     hersteller: "Vaillant",
     gruppe: "Wärmepumpe",
-    geraet: "Sole/Wasser Wärmepumpe",
-    baujahr: "2005-2025",
-    bedeutung: "Druck im Umweltkreis zu niedrig",
-    hinweis: "Solekreislauf prüfen, ggf. nachfüllen oder Leckage prüfen."
+    geraet: "aroTHERM",
+    baujahr: "-",
+    bedeutung: "Display bleibt dunkel",
+    ursache: "Mögliche Ursachen sind fehlende Spannungsversorgung, ausgelöste Sicherung, Anschlussfehler oder keine Versorgung des Reglers.",
+    hinweis: "Spannungsversorgung prüfen, Sicherungen prüfen, Regleranschluss prüfen, eBUS-Verbindung prüfen."
   },
   {
-    code: "F731",
+    code: "SYMPTOM-PUMPE-LAEUFT-NICHT",
+    suchbegriffe: ["pumpe läuft nicht", "heizkreispumpe läuft nicht", "pumpe startet nicht", "keine pumpenfunktion"],
     hersteller: "Vaillant",
     gruppe: "Wärmepumpe",
-    geraet: "Sole/Wasser Wärmepumpe",
-    baujahr: "2010-2025",
-    bedeutung: "Kältemitteldruck zu hoch",
-    hinweis: "Wärmetauscher, Soletemperatur und Kältekreis prüfen."
+    geraet: "aroTHERM",
+    baujahr: "-",
+    bedeutung: "Heizkreispumpe läuft nicht an",
+    ursache: "Mögliche Ursachen sind Luft im Heizkreis, fehlender Wasserdruck, blockierte Pumpe, defekte Verkabelung oder Pumpenfehler.",
+    hinweis: "Anlagendruck prüfen, Heizkreis entlüften, Schmutzfilter prüfen, Pumpe und Verkabelung kontrollieren."
   },
   {
-    code: "F733",
+    code: "SYMPTOM-DURCHFLUSS",
+    suchbegriffe: ["durchfluss zu niedrig", "zu wenig durchfluss", "volumenstrom", "wassermangel"],
     hersteller: "Vaillant",
     gruppe: "Wärmepumpe",
-    geraet: "Sole/Wasser Wärmepumpe",
-    baujahr: "2010-2025",
-    bedeutung: "Verdampfungstemperatur zu niedrig",
-    hinweis: "Soletemperatur, Durchfluss und Kältekreis prüfen."
-  },
-  {
-    code: "F752",
-    hersteller: "Vaillant",
-    gruppe: "Wärmepumpe",
-    geraet: "Sole/Wasser Wärmepumpe",
-    baujahr: "2015-2025",
-    bedeutung: "Frequenzumrichter Fehler",
-    hinweis: "Elektronik oder Verdichtersteuerung prüfen."
-  },
-  {
-    code: "F788",
-    hersteller: "Vaillant",
-    gruppe: "Wärmepumpe",
-    geraet: "Sole/Wasser Wärmepumpe",
-    baujahr: "2015-2025",
-    bedeutung: "Gebäudekreispumpe Fehler",
-    hinweis: "Pumpe, Stromversorgung und Hydraulik prüfen."
+    geraet: "aroTHERM",
+    baujahr: "-",
+    bedeutung: "Durchfluss im Heizkreis zu niedrig",
+    ursache: "Mögliche Ursachen sind nicht entlüfteter Heizkreis, verstopfter Schmutzfilter, Wassermangel, hoher Druckverlust oder Pumpenproblem.",
+    hinweis: "Heizkreis entlüften, Schmutzfilter reinigen, Anlagendruck prüfen, Pumpe prüfen."
   }
 ];
 
-// 👉 WICHTIG: Daten registrieren
-alleCodes.push(...dataVaillantWPSole);
+alleCodes.push(...dataVaillantWPSymptome);
