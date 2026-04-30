@@ -1,145 +1,213 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>FehlerTerminator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f5f5f5;
-    }
+<title>FehlerTerminator</title>
 
-    h1 {
-      text-align: center;
-    }
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f2f2f2;
+  margin: 0;
+  padding: 20px;
+}
 
-    input, button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 10px;
-      font-size: 18px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
+h1 {
+  text-align: center;
+}
 
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-    }
+input {
+  width: 100%;
+  padding: 15px;
+  font-size: 18px;
+  margin-top: 20px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
 
-    .resultBox {
-      margin-top: 15px;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-    }
+button {
+  width: 100%;
+  padding: 15px;
+  margin-top: 10px;
+  font-size: 18px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+}
 
-    .errorBox {
-      margin-top: 20px;
-      padding: 20px;
-      background: #ffe5e5;
-      border-radius: 10px;
-    }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-top: 30px;
+}
 
-    .meta {
-      color: #555;
-      font-size: 14px;
-    }
-  </style>
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.card img {
+  max-width: 120px;
+  max-height: 50px;
+  object-fit: contain;
+}
+
+.card:hover {
+  background: #e9f2ff;
+}
+
+.result {
+  background: white;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.code {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.block {
+  margin-top: 15px;
+}
+
+.label {
+  font-weight: bold;
+}
+
+.meta {
+  margin-top: 15px;
+  font-size: 14px;
+  color: #666;
+}
+</style>
+
 </head>
 
 <body>
 
 <h1>FehlerTerminator</h1>
 
-<input id="codeInput" placeholder="Fehlercode oder Fehlerbild eingeben">
-<button onclick="suche()">Suchen</button>
+<input id="searchInput" placeholder="Fehlercode eingeben (z.B. F731)">
+<button onclick="searchCode()">Suchen</button>
+
+<div class="grid">
+  <div class="card" onclick="filterHersteller('Vaillant')">
+    <img src="logo-vaillant.png">
+  </div>
+
+  <div class="card" onclick="filterHersteller('Stiebel')">
+    <img src="stiebel-eltron.svg">
+  </div>
+
+  <div class="card" onclick="filterHersteller('Buderus')">
+    <div>Buderus</div>
+  </div>
+
+  <div class="card" onclick="filterHersteller('Viessmann')">
+    <div>Viessmann</div>
+  </div>
+</div>
 
 <div id="result"></div>
 
-<script>
-  const alleCodes = [];
-
-  function normalisiere(wert) {
-    return String(wert)
-      .toUpperCase()
-      .replaceAll(" ", "")
-      .replaceAll(".", "")
-      .replaceAll("-", "")
-      .trim();
-  }
-
-  function suche() {
-    const eingabeOriginal = document.getElementById("codeInput").value;
-    const eingabe = normalisiere(eingabeOriginal);
-
-    const treffer = alleCodes.filter(e => {
-      const codeMatch = e.code && normalisiere(e.code) === eingabe;
-
-      const begriffMatch = e.suchbegriffe && e.suchbegriffe.some(begriff =>
-        normalisiere(begriff).includes(eingabe) || eingabe.includes(normalisiere(begriff))
-      );
-
-      const textMatch =
-        normalisiere(e.bedeutung || "").includes(eingabe) ||
-        normalisiere(e.ursache || "").includes(eingabe) ||
-        normalisiere(e.hinweis || "").includes(eingabe);
-
-      return codeMatch || begriffMatch || textMatch;
-    });
-
-    let html = "";
-
-    if (treffer.length > 0) {
-      html += `<p><b>${treffer.length} Treffer gefunden</b></p>`;
-
-      treffer.forEach(e => {
-        html += `
-          <div class="resultBox">
-            <h2>${e.code}</h2>
-            <p><strong>${e.bedeutung}</strong></p>
-
-            <p><b>Ursache:</b><br>${e.ursache || "-"}</p>
-            <p><b>Hinweis / Behebung:</b><br>${e.hinweis || "-"}</p>
-            <p><b>Gerät:</b><br>${e.geraet || "-"}</p>
-
-            <p class="meta">
-              Hersteller: ${e.hersteller || "-"}<br>
-              Gruppe: ${e.gruppe || "-"}<br>
-              Baujahr: ${e.baujahr || "-"}
-            </p>
-          </div>
-        `;
-      });
-    } else {
-      html = `<div class="errorBox">Kein Eintrag gefunden</div>`;
-    }
-
-    document.getElementById("result").innerHTML = html;
-  }
-</script>
-
+<!-- DATA FILES -->
 <script src="data-vaillant-gas.js"></script>
 <script src="data-vaillant-wp-luft.js"></script>
-<script src="data-vaillant-wp-sole.js"></script>
-<script src="data-vaillant-regler.js"></script>
-<script src="data-vaillant-pellet.js"></script>
 <script src="data-vaillant-lueftung.js"></script>
-<script src="data-vaillant-wp-symptome.js"></script>
-
-<script src="data-stiebel-wp.js"></script>
+<script src="data-vaillant-pellet.js"></script>
+<script src="data-vaillant-regler.js"></script>
 
 <script src="data-buderus-gas.js"></script>
 <script src="data-buderus-wp.js"></script>
 
 <script src="data-viessmann-gas.js"></script>
 <script src="data-viessmann-wp.js"></script>
+
+<script src="data-stiebel-wp.js"></script>
+
+<script>
+
+let allCodes = [];
+let currentFilter = null;
+
+function normalize(input) {
+  return input.toUpperCase().replace(/\s/g, '');
+}
+
+function filterHersteller(name) {
+  currentFilter = name;
+  document.getElementById("result").innerHTML =
+    "<div class='result'>Filter aktiv: " + name + "</div>";
+}
+
+function searchCode() {
+  let input = document.getElementById("searchInput").value;
+  let search = normalize(input);
+
+  let resultDiv = document.getElementById("result");
+  resultDiv.innerHTML = "";
+
+  let found = allCodes.filter(item => {
+    let matchCode = normalize(item.code) === search;
+    let matchFilter = currentFilter
+      ? item.hersteller?.includes(currentFilter)
+      : true;
+
+    return matchCode && matchFilter;
+  });
+
+  if (found.length === 0) {
+    resultDiv.innerHTML = "<div class='result'>Kein Treffer gefunden</div>";
+    return;
+  }
+
+  found.forEach(item => {
+    resultDiv.innerHTML += `
+      <div class="result">
+        <div class="code">${item.code}</div>
+
+        <div class="block">
+          <span class="label">Bedeutung:</span><br>
+          ${item.bedeutung || "-"}
+        </div>
+
+        <div class="block">
+          <span class="label">Ursache:</span><br>
+          ${item.ursache || "-"}
+        </div>
+
+        <div class="block">
+          <span class="label">Behebung:</span><br>
+          ${item.behebung || "-"}
+        </div>
+
+        <div class="block">
+          <span class="label">Hinweis:</span><br>
+          ${item.hinweis || "-"}
+        </div>
+
+        <div class="meta">
+          Hersteller: ${item.hersteller || "-"}<br>
+          Gerät: ${item.geraet || "-"}<br>
+          Baujahr: ${item.baujahr || "-"}
+        </div>
+      </div>
+    `;
+  });
+}
+
+</script>
 
 </body>
 </html>
