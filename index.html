@@ -1,213 +1,160 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <title>FehlerTerminator</title>
 
-<title>FehlerTerminator</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f2f2f2;
+      padding: 20px;
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f2f2f2;
-  margin: 0;
-  padding: 20px;
-}
+    h1 {
+      text-align: center;
+    }
 
-h1 {
-  text-align: center;
-}
+    input, button {
+      width: 100%;
+      padding: 15px;
+      font-size: 18px;
+      margin-top: 10px;
+    }
 
-input {
-  width: 100%;
-  padding: 15px;
-  font-size: 18px;
-  margin-top: 20px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
+    button {
+      background: #3b6fd8;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
 
-button {
-  width: 100%;
-  padding: 15px;
-  margin-top: 10px;
-  font-size: 18px;
-  background: #007bff;
-  color: white;
-  border: none;
-  border-radius: 10px;
-}
+    .result {
+      background: white;
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
-  margin-top: 30px;
-}
+    .hersteller-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-.card {
-  background: white;
-  border-radius: 12px;
-  padding: 20px;
-  text-align: center;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
+    .hersteller-buttons button {
+      background: #ddd;
+      color: black;
+    }
 
-.card img {
-  max-width: 120px;
-  max-height: 50px;
-  object-fit: contain;
-}
-
-.card:hover {
-  background: #e9f2ff;
-}
-
-.result {
-  background: white;
-  margin-top: 20px;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-.code {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
-
-.block {
-  margin-top: 15px;
-}
-
-.label {
-  font-weight: bold;
-}
-
-.meta {
-  margin-top: 15px;
-  font-size: 14px;
-  color: #666;
-}
-</style>
-
+    .active {
+      background: #3b6fd8 !important;
+      color: white !important;
+    }
+  </style>
 </head>
 
 <body>
 
 <h1>FehlerTerminator</h1>
 
-<input id="searchInput" placeholder="Fehlercode eingeben (z.B. F731)">
-<button onclick="searchCode()">Suchen</button>
+<input id="searchInput" placeholder="Fehlercode eingeben (z.B. F28 oder 28)">
+<button onclick="suche()">Suchen</button>
 
-<div class="grid">
-  <div class="card" onclick="filterHersteller('Vaillant')">
-    <img src="logo-vaillant.png">
-  </div>
-
-  <div class="card" onclick="filterHersteller('Stiebel')">
-    <img src="stiebel-eltron.svg">
-  </div>
-
-  <div class="card" onclick="filterHersteller('Buderus')">
-    <div>Buderus</div>
-  </div>
-
-  <div class="card" onclick="filterHersteller('Viessmann')">
-    <div>Viessmann</div>
-  </div>
+<div class="hersteller-buttons">
+  <button onclick="setHersteller('Vaillant', this)">Vaillant</button>
+  <button onclick="setHersteller('Stiebel', this)">Stiebel</button>
+  <button onclick="setHersteller('Buderus', this)">Buderus</button>
+  <button onclick="setHersteller('Viessmann', this)">Viessmann</button>
 </div>
 
 <div id="result"></div>
 
-<!-- DATA FILES -->
+<script>
+  // 🔥 ZENTRALE SAMMLUNG
+  let alleCodes = [];
+
+  // 🔥 HERSTELLER FILTER
+  let aktiverHersteller = null;
+
+  function setHersteller(name, button) {
+    aktiverHersteller = name;
+
+    document.querySelectorAll(".hersteller-buttons button").forEach(btn => {
+      btn.classList.remove("active");
+    });
+
+    button.classList.add("active");
+  }
+
+  // 🔥 NORMALISIERUNG
+  function normalizeCode(code) {
+    return code
+      .toUpperCase()
+      .replace(/\s/g, "")
+      .replace(".", "");
+  }
+
+  function suche() {
+    let input = document.getElementById("searchInput").value;
+    let suchCode = normalizeCode(input);
+
+    let treffer = alleCodes.filter(e => {
+      let code = normalizeCode(e.code);
+
+      let matchCode = code.includes(suchCode);
+
+      let matchHersteller = aktiverHersteller
+        ? e.hersteller === aktiverHersteller
+        : true;
+
+      return matchCode && matchHersteller;
+    });
+
+    let resultDiv = document.getElementById("result");
+
+    if (treffer.length === 0) {
+      resultDiv.innerHTML = "<div class='result'>Kein Treffer gefunden</div>";
+      return;
+    }
+
+    resultDiv.innerHTML = treffer.map(e => `
+      <div class="result">
+        <h2>${e.code}</h2>
+
+        <strong>${e.bedeutung || ""}</strong><br><br>
+
+        ${e.ursache ? `<strong>Ursache:</strong><br>${e.ursache}<br><br>` : ""}
+
+        ${e.hinweis ? `<strong>Hinweis:</strong><br>${e.hinweis}<br><br>` : ""}
+
+        <strong>Gerät:</strong><br>${e.geraet || "-"}<br><br>
+
+        <small>
+        Hersteller: ${e.hersteller || "-"}<br>
+        Gruppe: ${e.gruppe || "-"}<br>
+        Baujahr: ${e.baujahr || "-"}
+        </small>
+      </div>
+    `).join("");
+  }
+</script>
+
+<!-- 🔥 DATEN EINBINDEN -->
 <script src="data-vaillant-gas.js"></script>
 <script src="data-vaillant-wp-luft.js"></script>
-<script src="data-vaillant-lueftung.js"></script>
-<script src="data-vaillant-pellet.js"></script>
 <script src="data-vaillant-regler.js"></script>
+<script src="data-vaillant-pellet.js"></script>
+<script src="data-vaillant-lueftung.js"></script>
+
+<script src="data-stiebel-wp.js"></script>
 
 <script src="data-buderus-gas.js"></script>
 <script src="data-buderus-wp.js"></script>
 
 <script src="data-viessmann-gas.js"></script>
 <script src="data-viessmann-wp.js"></script>
-
-<script src="data-stiebel-wp.js"></script>
-
-<script>
-
-let allCodes = [];
-let currentFilter = null;
-
-function normalize(input) {
-  return input.toUpperCase().replace(/\s/g, '');
-}
-
-function filterHersteller(name) {
-  currentFilter = name;
-  document.getElementById("result").innerHTML =
-    "<div class='result'>Filter aktiv: " + name + "</div>";
-}
-
-function searchCode() {
-  let input = document.getElementById("searchInput").value;
-  let search = normalize(input);
-
-  let resultDiv = document.getElementById("result");
-  resultDiv.innerHTML = "";
-
-  let found = allCodes.filter(item => {
-    let matchCode = normalize(item.code) === search;
-    let matchFilter = currentFilter
-      ? item.hersteller?.includes(currentFilter)
-      : true;
-
-    return matchCode && matchFilter;
-  });
-
-  if (found.length === 0) {
-    resultDiv.innerHTML = "<div class='result'>Kein Treffer gefunden</div>";
-    return;
-  }
-
-  found.forEach(item => {
-    resultDiv.innerHTML += `
-      <div class="result">
-        <div class="code">${item.code}</div>
-
-        <div class="block">
-          <span class="label">Bedeutung:</span><br>
-          ${item.bedeutung || "-"}
-        </div>
-
-        <div class="block">
-          <span class="label">Ursache:</span><br>
-          ${item.ursache || "-"}
-        </div>
-
-        <div class="block">
-          <span class="label">Behebung:</span><br>
-          ${item.behebung || "-"}
-        </div>
-
-        <div class="block">
-          <span class="label">Hinweis:</span><br>
-          ${item.hinweis || "-"}
-        </div>
-
-        <div class="meta">
-          Hersteller: ${item.hersteller || "-"}<br>
-          Gerät: ${item.geraet || "-"}<br>
-          Baujahr: ${item.baujahr || "-"}
-        </div>
-      </div>
-    `;
-  });
-}
-
-</script>
 
 </body>
 </html>
