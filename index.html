@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FehlerTerminator</title>
+  <style>
+    :root{
+      --bg:#eef3f8; --card:#fff; --text:#142033; --muted:#667085;
+      --primary:#0f766e; --primary2:#115e59; --border:#d8e0ea;
+      --shadow:0 12px 30px rgba(15,23,42,.10); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#f8fbff 0%,var(--bg) 100%);color:var(--text)}
+    .app{max-width:1100px;margin:0 auto;padding:22px}
+    header{background:linear-gradient(135deg,var(--primary),#164e63);color:white;border-radius:24px;padding:26px;box-shadow:var(--shadow);margin-bottom:18px}
+    .topline{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .brand{display:flex;align-items:center;gap:14px}.logo{width:54px;height:54px;border-radius:16px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:30px;border:1px solid rgba(255,255,255,.25)}
+    h1{margin:0;font-size:30px}.subtitle{margin:6px 0 0;color:rgba(255,255,255,.84);font-size:15px}
+    .badge{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);padding:9px 12px;border-radius:999px;font-size:13px}
+    .search-card,.panel{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1px solid var(--border);padding:18px;margin-bottom:18px}
+    .search-row{display:grid;grid-template-columns:1fr auto;gap:12px}
+    input,select,button{font-size:16px;border-radius:14px;border:1px solid var(--border);padding:14px 15px;outline:none}
+    input:focus,select:focus{border-color:var(--primary);box-shadow:0 0 0 4px rgba(15,118,110,.12)}
+    button{cursor:pointer;border:none;background:var(--primary);color:white;font-weight:700}
+    button:hover{background:var(--primary2)}.secondary{background:#e7eef6;color:#1f2937;border:1px solid var(--border)}.secondary:hover{background:#dbe6f0}
+    .manufacturer,.filters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+    .manufacturer button{background:#f1f5f9;color:#1f2937;border:1px solid var(--border)}.manufacturer button.active{background:var(--primary);color:white;border-color:var(--primary)}
+    .quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.chip{border:1px solid var(--border);background:#fff;color:#334155;padding:9px 11px;border-radius:999px;font-size:14px;cursor:pointer}
+    .layout{display:grid;grid-template-columns:1fr 310px;gap:18px}.panel h2{margin:0 0 12px;font-size:18px}
+    .empty{text-align:center;color:var(--muted);padding:38px 16px;border:1px dashed var(--border);border-radius:16px;background:#f8fafc}
+    .result{border:1px solid var(--border);border-radius:18px;padding:16px;background:#fff;margin-bottom:12px;box-shadow:0 6px 18px rgba(15,23,42,.05)}
+    .result-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px}.code{font-size:26px;font-weight:800;color:var(--primary2)}
+    .group{color:#475569;background:#f1f5f9;padding:6px 10px;border-radius:999px;font-size:13px;white-space:nowrap}
+    .meaning{font-size:18px;font-weight:700;margin:8px 0 14px}.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .info{background:#f8fafc;border:1px solid #e5eaf0;padding:12px;border-radius:14px}.info strong{display:block;margin-bottom:6px;color:#0f172a}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;color:#64748b;font-size:13px}
+    .side-list{display:grid;gap:10px}.side-item{background:#f8fafc;border:1px solid var(--border);border-radius:14px;padding:12px;cursor:pointer}.side-item:hover{border-color:var(--primary)}
+    .side-code{font-weight:800;color:var(--primary2)}.count{color:var(--muted);font-size:14px;margin-bottom:12px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.small-btn{font-size:14px;padding:10px 12px;border-radius:12px}
+    @media(max-width:860px){.layout{grid-template-columns:1fr}.filters,.manufacturer{grid-template-columns:1fr 1fr}.search-row{grid-template-columns:1fr}.info-grid{grid-template-columns:1fr}header{padding:20px}h1{font-size:26px}}
+    @media print{body{background:white}header,.search-card,.panel.side{display:none}.app{max-width:none;padding:0}.layout{display:block}.panel{box-shadow:none;border:none}.result{break-inside:avoid}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header><div class="topline"><div class="brand"><div class="logo">⚡</div><div><h1>FehlerTerminator</h1><p class="subtitle">Fehlercodes, Ursachen und Prüfschritte für den schnellen Kundendienst-Einsatz.</p></div></div><div class="badge" id="datenStatus">Daten werden geladen…</div></div></header>
+    <section class="search-card">
+      <div class="search-row"><input id="searchInput" placeholder="Fehlercode oder Suchtext eingeben, z. B. F735, f 735, Druck, Lüfter" autocomplete="off" /><button onclick="suche()">Suchen</button></div>
+      <div class="manufacturer"><button onclick="setHersteller('Vaillant', this)">Vaillant</button><button onclick="setHersteller('Stiebel', this)">Stiebel</button><button onclick="setHersteller('Buderus', this)">Buderus</button><button onclick="setHersteller('Viessmann', this)">Viessmann</button></div>
+      <div class="filters"><select id="gruppeFilter" onchange="suche()"><option value="">Alle Gruppen</option></select><select id="sortierung" onchange="suche()"><option value="code">Nach Code sortieren</option><option value="hersteller">Nach Hersteller sortieren</option><option value="gruppe">Nach Gruppe sortieren</option></select><button class="secondary" onclick="resetSuche()">Zurücksetzen</button><button class="secondary" onclick="window.print()">Drucken / PDF</button></div>
+      <div class="quick"><span class="chip" onclick="quickSearch('Druck')">Druck</span><span class="chip" onclick="quickSearch('Lüfter')">Lüfter</span><span class="chip" onclick="quickSearch('Kompressor')">Kompressor</span><span class="chip" onclick="quickSearch('eBUS')">eBUS</span><span class="chip" onclick="quickSearch('F735')">F735</span><span class="chip" onclick="quickSearch('F755')">F755</span></div>
+    </section>
+    <main class="layout"><section class="panel"><h2>Suchergebnis</h2><div class="count" id="count">Noch keine Suche gestartet.</div><div id="result"><div class="empty">Gib einen Fehlercode oder Suchbegriff ein. Beispiele: <b>F735</b>, <b>f 735</b>, <b>Druck</b>, <b>Kompressor</b>.</div></div></section><aside class="panel side"><h2>Schnellzugriff</h2><div class="side-list" id="quickList"></div></aside></main>
+  </div>
+  <script>
+    let alleCodes = [];
+    let aktiverHersteller = null;
+    function normalizeCode(code){return String(code||"").toUpperCase().replace(/\s+/g,"").replace(/\./g,"").replace(/-/g,"")}
+    function normalizeText(text){return String(text||"").toLowerCase()}
+    function setHersteller(name,button){aktiverHersteller=aktiverHersteller===name?null:name;document.querySelectorAll(".manufacturer button").forEach(btn=>btn.classList.remove("active"));if(aktiverHersteller)button.classList.add("active");suche()}
+    function getSearchText(e){return [e.code,e.hersteller,e.gruppe,e.geraet,e.baujahr,e.bedeutung,e.ursache,e.hinweis].join(" ")}
+    function suche(){const input=document.getElementById("searchInput").value.trim();const suchCode=normalizeCode(input);const suchText=normalizeText(input);const gruppe=document.getElementById("gruppeFilter").value;const sortierung=document.getElementById("sortierung").value;let treffer=alleCodes.filter(e=>{const code=normalizeCode(e.code);const fullText=normalizeText(getSearchText(e));const matchInput=!input?true:code.includes(suchCode)||fullText.includes(suchText);const matchHersteller=aktiverHersteller?e.hersteller===aktiverHersteller:true;const matchGruppe=gruppe?e.gruppe===gruppe:true;return matchInput&&matchHersteller&&matchGruppe});treffer.sort((a,b)=>String(a[sortierung]||a.code||"").localeCompare(String(b[sortierung]||b.code||""),"de",{numeric:true}));renderTreffer(treffer,input)}
+    function renderTreffer(treffer,input){const resultDiv=document.getElementById("result");const count=document.getElementById("count");if(treffer.length===0){count.textContent=input?"0 Treffer gefunden.":"Noch keine Suche gestartet.";resultDiv.innerHTML="<div class='empty'>Kein Treffer gefunden. Prüfe Code, Herstellerfilter oder Suchbegriff.</div>";return}count.textContent=treffer.length+" Treffer gefunden.";resultDiv.innerHTML=treffer.map(e=>`<article class="result"><div class="result-head"><div class="code">${escapeHtml(e.code||"-")}</div><div class="group">${escapeHtml(e.gruppe||"-")}</div></div><div class="meaning">${escapeHtml(e.bedeutung||"Keine Bedeutung hinterlegt")}</div><div class="info-grid"><div class="info"><strong>Ursache</strong>${escapeHtml(e.ursache||"Keine Ursache hinterlegt.")}</div><div class="info"><strong>Prüfung / Hinweis</strong>${escapeHtml(e.hinweis||"Kein Hinweis hinterlegt.")}</div></div><div class="meta"><div><b>Hersteller:</b> ${escapeHtml(e.hersteller||"-")}</div><div><b>Gerät:</b> ${escapeHtml(e.geraet||"-")}</div><div><b>Baujahr:</b> ${escapeHtml(e.baujahr||"-")}</div><div><b>Code normalisiert:</b> ${escapeHtml(normalizeCode(e.code))}</div></div><div class="actions"><button class="small-btn secondary" onclick="copyCode('${escapeJs(e.code||"")}')">Code kopieren</button><button class="small-btn secondary" onclick="copyText('${escapeJs(e.code||"")}')">Kurzhinweis kopieren</button></div></article>`).join("")}
+    function quickSearch(text){document.getElementById("searchInput").value=text;suche()}
+    function resetSuche(){aktiverHersteller=null;document.getElementById("searchInput").value="";document.getElementById("gruppeFilter").value="";document.querySelectorAll(".manufacturer button").forEach(btn=>btn.classList.remove("active"));suche()}
+    function copyCode(code){navigator.clipboard?.writeText(code)}
+    function copyText(code){const e=alleCodes.find(x=>x.code===code);if(!e)return;const text=`${e.code}: ${e.bedeutung}\nUrsache: ${e.ursache}\nHinweis: ${e.hinweis}`;navigator.clipboard?.writeText(text)}
+    function escapeHtml(text){return String(text||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
+    function escapeJs(text){return String(text||"").replace(/\\/g,"\\\\").replace(/'/g,"\\'")}
+    function initNachDaten(){document.getElementById("datenStatus").textContent=alleCodes.length+" Codes geladen";const gruppen=[...new Set(alleCodes.map(e=>e.gruppe).filter(Boolean))].sort();const select=document.getElementById("gruppeFilter");gruppen.forEach(g=>{const opt=document.createElement("option");opt.value=g;opt.textContent=g;select.appendChild(opt)});const quickList=document.getElementById("quickList");const wichtige=["F.022","F.532","F.735","F.755","F.1100","F.1120","N.685"];quickList.innerHTML=wichtige.map(code=>{const e=alleCodes.find(x=>normalizeCode(x.code)===normalizeCode(code));return `<div class="side-item" onclick="quickSearch('${code}')"><div class="side-code">${code}</div><div>${e?escapeHtml(e.bedeutung):"Schnellsuche"}</div></div>`}).join("")}
+    document.addEventListener("DOMContentLoaded",()=>{document.getElementById("searchInput").addEventListener("keydown",e=>{if(e.key==="Enter")suche()});setTimeout(initNachDaten,250)})
+  </script>
+  <script src="data-vaillant-gas.js"></script>
+  <script src="data-vaillant-wp-luft.js"></script>
+  <script src="data-vaillant-regler.js"></script>
+  <script src="data-vaillant-pellet.js"></script>
+  <script src="data-vaillant-lueftung.js"></script>
+  <script src="data-stiebel-wp.js"></script>
+  <script src="data-buderus-gas.js"></script>
+  <script src="data-buderus-wp.js"></script>
+  <script src="data-viessmann-gas.js"></script>
+  <script src="data-viessmann-wp.js"></script>
+</body>
+</html>
